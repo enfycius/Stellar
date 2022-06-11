@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.psg.mapper.MemberMapper">
+
+
+
+<!--  <select id="memberlist" resultType="com.psg.vo.MemberVO">
+	select real_name,
+			 id,
+			 slack_name,
+			 comment,
+			 team_id,
+			 git_name
+    from user_info
+</select> --> 
+
+
+<insert id="register">
+	insert into psg_info(username, password, email, date) values(#{username}, #{password}, #{email}, now());
+	insert into psg_user(username, slack_name, git_name) values(select username from psg_info where username=#{username}, #{slack_name}, #{git_name});
+</insert>
+
+<select id="DupIdChk" parameterType="String" resultType="int">
+	select count(*) from psg_info where username = #{_parameter}
+</select>
+
+<select id="DupSlackChk" parameterType="String" resultType="int">
+	select count(*) from psg_user where slack_name = #{_parameter}
+</select>
+
+<select id="DupGithubChk" parameterType="String" resultType="int">
+	select count(*) from psg_user where git_name = #{_parameter}
+</select>
+
+<select id="selectUserInfoOne" parameterType="String" resultType="com.psg.vo.MemberVO">
+	select username, password, email, auth from psg_info where username = #{_parameter}
+</select>
+
+<select id="selectUserAuthOne" parameterType="String" resultType="String">
+	select auth from psg_info where username = #{_parameter}
+</select>
+
+<select id="memberList" resultType="com.psg.vo.MemberVO">
+	select username, email, auth, date from psg_info order by username desc;
+</select>
+
+<update id="updateRole" parameterType="String">
+	update psg_info set auth = #{auth} where username = #{username}
+</update>
+
+<!-- <select id="getUserById" parameterType="String" resultType="com.psg.security.CustomUserDetails">
+	select * from psg_info where username = #{username}
+</select> -->
+
+<!-- <select id="getUserById" resultMap="userModel" parameterType="String">
+	select username, password, role from psg_info join 'roles' using(username) where username = #{username} 
+</select>
+
+<resultMap type="com.psg.vo.MemberVO" id="userModel">
+	<id property="username" column="username" javaType="String" />
+	<result property="password" column="password" javaType="String" />
+	<collection property="roles" column="role" javaType="List" ofType="String">
+		<result column="role" />
+	</collection>
+</resultMap> -->
+
+
+
+<!-- <update id="membermodify" parameterType="com.psg.vo.MemberVO">
+
+update user_info
+set real_name = #{real_name},
+	 slack_name = #{slack_name},
+	 git_name = #{git_name},
+	 comment = #{comment}
+where id = #{id}
+</update> -->
+
+
+<!-- <insert id="memberinsert">
+	insert into user_info
+					(real_name,
+					id,
+					name,
+					team_id)
+					values(#{real_name},
+							  #{id},
+							  #{name},
+							  #{team_id})
+</insert>
+<delete id="memberdelete" parameterType="com.psg.vo.MemberVO">
+	delete from user_info
+	where id=#{id}
+</delete> -->
+
+<!-- 	<select id="selectSampleList" parameterType="searchVO" resultType="egovMap">
+
+			SELECT
+				ID, NAME, DESCRIPTION, USE_YN, REG_USER
+			FROM SAMPLE
+			WHERE 1=1
+			<if test="searchKeyword != null and searchKeyword != ''">
+		        <choose>
+		            <when test="searchCondition == 0">
+						AND	ID LIKE '%' || #{searchKeyword} || '%'
+					</when>
+		            <when test="searchCondition == 1">
+						AND	NAME LIKE '%' || #{searchKeyword} || '%'
+					</when>
+				</choose>
+			</if>
+			ORDER BY ID ASC
+			LIMIT #{recordCountPerPage} OFFSET #{firstIndex}
+	</select> -->
+
+	<!-- <select id="selectSampleListTotCnt" parameterType="searchVO" resultType="int">
+
+			SELECT COUNT(*) totcnt
+			FROM SAMPLE
+			WHERE 1=1
+			<if test="searchKeyword != null and searchKeyword != ''">
+		        <choose>
+		            <when test="searchCondition == 0">
+						AND ID LIKE '%' || #{searchKeyword} || '%'
+					</when>
+		            <when test="searchCondition == 1">
+						AND	NAME LIKE '%' || #{searchKeyword} || '%'
+					</when>
+				</choose>
+			</if>
+	</select> -->
+
+</mapper>

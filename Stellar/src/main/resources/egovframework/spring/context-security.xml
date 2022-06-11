@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+             xmlns:beans="http://www.springframework.org/schema/beans"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://www.springframework.org/schema/beans
+                                 http://www.springframework.org/schema/beans/spring-beans.xsd
+                                 http://www.springframework.org/schema/security
+                                 http://www.springframework.org/schema/security/spring-security.xsd">
+                                 
+  <beans:bean id="bcryptPasswordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder" />
+  <beans:bean id="memberLoginFailHandler" class="com.psg.service.impl.MemberLoginFailHandler" />
+  <beans:bean id="memberLoginSuccessHandler" class="com.psg.service.impl.MemberLoginSuccessHandler" />
+     
+        <http use-expressions="true">
+        
+        	<access-denied-handler error-page="/AccessDenied.do" />
+        
+        	<intercept-url pattern="/" access="permitAll" />
+        	<intercept-url pattern="/Main.do" access="permitAll" />
+        	<intercept-url pattern="/Login.do" access="permitAll" />
+        	<intercept-url pattern="/Admin/**" access="hasRole('ROLE_ADMIN')" />
+        	<intercept-url pattern="/Member/**" access="hasRole('ROLE_MEMBER')" />
+        	
+        	
+        
+        	<form-login 
+        				login-page="/Login.do" 
+        				username-parameter="username"
+        				password-parameter="password"
+            			login-processing-url="/Login.do"
+            			
+            			authentication-success-handler-ref="memberLoginSuccessHandler"
+            			authentication-failure-handler-ref="memberLoginFailHandler" />
+            			 
+            <logout 
+            			logout-url="/Logout.do" 
+            			invalidate-session="true"
+            			delete-cookies="true"
+            			logout-success-url="/"/>
+        
+           
+            
+            <!--  <csrf disabled="true" /> -->
+            
+        </http>
+        
+       <authentication-manager>
+            <authentication-provider user-service-ref="MemberService">
+            
+                <password-encoder ref="bcryptPasswordEncoder" />
+      
+            </authentication-provider>
+        </authentication-manager> 
+        
+       
+    
+</beans:beans>

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.psg.mapper.CommitMapper">
+
+<select id="Count_Commit_Today" resultType="int">
+	select count(*) from commit_info where date_format(commit_date, '%Y-%m-%d') = curdate()
+</select>
+
+<select id="Count_Commit_Weekly" resultType="int">
+	select count(*) from commit_info where commit_date between date_add(now(), interval -1 week) and now()
+</select>
+
+<select id="Count_Commit_Monthly" resultType="int">
+	select count(*) from commit_info where commit_date between date_add(now(), interval -1 month) and now()
+</select>
+
+<select id="DupSlackChk" parameterType="String" resultType="int">
+	select count(*) from psg_slack where slack_name = #{_parameter}
+</select>
+
+<select id="DupGithubChk" parameterType="String" resultType="int">
+	select count(*) from psg_github where github_name = #{_parameter}
+</select>
+
+<select id="DupKakaoChk" parameterType="String" resultType="int">
+	select count(*) from psg_kakao where kakao_name = #{_parameter}
+</select>
+
+<select id="DupRestChk" resultType="int">
+	select count(*) from psg_rest where (username = (select username from psg_kakao where kakao_name = #{kakao_name})) and (start_date = #{start_date}) and (end_date = #{end_date})
+</select>
+
+<select id="ExistKakaoChk" resultType="int">
+	select count(*) from psg_kakao where username = #{username}
+</select>
+
+<select id="get_rest" resultType="com.psg.vo.RestVO">
+	select username, start_date, end_date from psg_rest
+</select>
+
+<select id="get_kakao" resultType="com.psg.vo.KakaoVO">
+	select username, kakao_name from psg_kakao
+</select>
+
+<select id="get_member_rest" parameterType="String" resultType="com.psg.vo.RestVO">
+	select username, start_date, end_date from psg_rest where username = #{username}
+</select>
+
+<delete id="delete_rest">
+	delete from psg_rest where username = #{username} and start_date = #{start_date} and end_date = #{end_date} 
+</delete>
+
+<insert id="put_rest">
+	insert into psg_rest(username, start_date, end_date) value((select username from psg_info where username = (select username from psg_kakao where kakao_name = #{kakao_name})), #{start_date}, #{end_date})
+</insert>
+
+<select id="get_slack_info" parameterType="String" resultType="com.psg.vo.SlackVO">
+	select username, slack_name from psg_slack where username = #{_parameter}
+</select>
+
+<delete id="delete_slack_info" parameterType="String">
+	delete from psg_slack where username = #{username} and slack_name = #{slack_name}
+</delete>
+
+<insert id="put_slack_info" parameterType="String">
+	insert into psg_slack(username, slack_name) value((select username from psg_info where username = #{username}), #{slack_name})
+</insert>
+
+<select id="get_github_info" parameterType="String" resultType="com.psg.vo.GithubVO">
+	select username, github_name from psg_github where username = #{_parameter}
+</select>
+
+<delete id="delete_github_info" parameterType="String">
+	delete from psg_github where username = #{username} and github_name = #{github_name}
+</delete>
+
+<insert id="put_github_info" parameterType="String">
+	insert into psg_github(username, github_name) value((select username from psg_info where username = #{username}), #{github_name})
+</insert>
+
+<select id="get_kakao_info" parameterType="String" resultType="String">
+	select kakao_name from psg_kakao where username = #{_parameter}
+</select>
+
+<delete id="delete_kakao_info" parameterType="String">
+	delete from psg_kakao where username = #{username} and kakao_name = #{kakao_name}
+</delete>
+
+<insert id="put_kakao_info" parameterType="String">
+	insert into psg_kakao(username, kakao_name) value((select username from psg_info where username = #{username}), #{kakao_name})
+</insert>
+
+<update id="update_kakao_info" parameterType="String">
+	update psg_kakao set kakao_name = #{kakao_name} where username = #{username}
+</update>
+
+</mapper>

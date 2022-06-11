@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+             xmlns:beans="http://www.springframework.org/schema/beans"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://www.springframework.org/schema/beans
+                                 http://www.springframework.org/schema/beans/spring-beans.xsd
+                                 http://www.springframework.org/schema/security
+                                 http://www.springframework.org/schema/security/spring-security.xsd">
+     
+        <http use-expressions="true">
+        
+        	<intercept-url pattern="/" access="permitAll" />
+        	<intercept-url pattern="/Main.do" access="permitAll" />
+        	<intercept-url pattern="/admin**" access="hasRole('ADMIN')" />
+        	<intercept-url pattern="/Login.do" access="permitAll" />
+        	
+        
+        	<form-login 
+        				login-page="/Login.do"
+        				default-target-url="/Main.do" 
+        				username-parameter="username"
+            			password-parameter="password"
+            			authentication-failure-url="/Login.do?error"
+            			login-processing-url="/Login.do"
+            			
+            			
+            			 />
+            			 
+            <logout 
+            			logout-url="/Logout.do" 
+            			invalidate-session="true"
+            			logout-success-url="/Login.do"/>
+            	
+            	
+            
+            
+        
+           
+            
+             <csrf disabled="true" />
+            
+        </http>
+        
+        <authentication-manager>
+            <authentication-provider>
+                <user-service>
+                    <user name="admin" password="psg@100026" authorities="ROLE_ADMIN"/>
+                    <user name="guest" password="guest" authorities="ROLE_GUEST"/>
+                </user-service>
+            </authentication-provider>
+        </authentication-manager>
+        
+       
+    
+</beans:beans>

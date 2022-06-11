@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.psg.mapper.MemberMapper">
+
+<insert id="register">
+	insert into psg_info(username, password, email, date) value(#{username}, #{password}, #{email}, now())
+</insert>
+
+<select id="DupIdChk" parameterType="String" resultType="int">
+	select count(*) from psg_info where username = #{_parameter}
+</select>
+
+<select id="Number_Member" resultType="int">
+	select count(*) from psg_info where auth = "ROLE_ADMIN" or auth = "ROLE_MEMBER"
+</select>
+
+<select id="selectUserInfoOne" parameterType="String" resultType="com.psg.vo.MemberVO">
+	select username, password, email, auth from psg_info where username = #{_parameter}
+</select>
+
+<select id="selectUserAuthOne" parameterType="String" resultType="String">
+	select auth from psg_info where username = #{_parameter}
+</select>
+
+<select id="memberList" resultType="com.psg.vo.MemberVO">
+	select username, email, auth, date from psg_info order by username desc;
+</select>
+
+<select id="memberNotRestList" resultType="String">
+	select username from psg_info where not username in (select username from psg_rest where date(#{start}) >= start_date and end_date >= date(#{end}))
+</select>
+
+<select id="memberRest" resultType="com.psg.vo.MemberVO">
+	select psg_info.username, psg_info.email, psg_info.auth, psg_info.date, psg_user.slack_name, psg_user.github_name from psg_info left join psg_user on psg_info.username = psg_user.username order by psg_info.username asc;  
+</select>
+
+<update id="updateRole" parameterType="String">
+	update psg_info set auth = #{auth} where username = #{username}
+</update>
+
+<update id="Username_Update" parameterType="String">
+	update psg_info set username = #{username} where username = #{old_username}
+</update>
+
+</mapper>
